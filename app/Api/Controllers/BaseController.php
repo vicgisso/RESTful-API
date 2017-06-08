@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Api\Controllers;
 
-/**
- * Class ApiController
- * @package App\Http\Controllers
- */
-class ApiController extends Controller
+use App\Http\Controllers\Controller;
+use Dingo\Api\Routing\Helpers;
+
+class BaseController extends Controller
 {
+    use Helpers;
+
     /**
      * @var int
      */
@@ -93,5 +94,4 @@ class ApiController extends Controller
             'errors'    =>[]
         ],$this->getSuccessStatusCode());
     }
-
 }
