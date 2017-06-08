@@ -2,11 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Lession;
+use App\Lesson;
+use App\Transformer\LessonTransformer;
 use Illuminate\Http\Request;
 
-class LessionsController extends Controller
+/**
+ * Class LessonsController
+ * @package App\Http\Controllers
+ */
+class LessonsController extends ApiController
 {
+
+    /**
+     * @var LessonTransformer
+     */
+    protected $lessonTransformer;
+
+
+    /**
+     * LessonsController constructor.
+     * @param LessonTransformer $lessonTransformer
+     */
+    public function __construct(LessonTransformer $lessonTransformer)
+    {
+        $this->lessonTransformer = $lessonTransformer;
+        $this->middleware('auth.basic',['only'=>['store','update']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,11 +36,11 @@ class LessionsController extends Controller
      */
     public function index()
     {
-        return response()->json([
-            'status'=>'ok',
-            'code'=>'200',
-            'data'=>$this->transform(Lession::all())
-        ]);
+        $lessons = Lesson::all();
+        if(!$lessons){
+            return $this->errorResponse();
+        }
+        return $this->successResponse($this->lessonTransformer->transformCollection($lessons->toArray()));
     }
 
     /**
@@ -39,22 +61,29 @@ class LessionsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if(!$request->get('title') || !$request->get('body') || !$request->get('free'))
+        {
+            return $this->setErrorStatusCode(422)->errorResponse('validate fails');
+        }
+        Lesson::create($request->all());
+        return $this->setSuccessStatusCode(201)->successResponse('create success');
     }
 
+
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     * @author yuerengui
+     * @description
      */
     public function show($id)
     {
-        return response()->json([
-            'status'=>'ok',
-            'code'=>'200',
-            'data'=>Lession::findOrFail($id)
-        ]);
+        $lesson = Lesson::find($id);
+
+        if(!$lesson){
+            return $this->errorResponse();
+        }
+        return $this->successResponse($this->lessonTransformer->transform($lesson));
     }
 
     /**
@@ -91,14 +120,4 @@ class LessionsController extends Controller
         //
     }
 
-    public function transform($lession)
-    {
-        return array_map(function($lession){
-            return [
-                'title'=>$lession['title'],
-                'content'=>$lession['body'],
-                'is_flag'=>$lession['free']
-            ];
-        },$lession->toArray());
-    }
 }
