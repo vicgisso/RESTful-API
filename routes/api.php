@@ -11,14 +11,9 @@
 |
 */
 
-$api = app('Dingo\Api\Routing\Router');
-
-$api->version('v1', function ($api) {
-    $api->group(['namespace' => 'App\Api\Controllers'], function ($api) {
-        $api->post('user/login','AuthController@authenticate');
-        $api->group(['middleware'=>'jwt.auth'],function($api){
-            $api->get('lessons', 'LessonController@index');
-            $api->get('lessons/{id}', 'LessonController@show');
-        });
-    });
+Route::group(['prefix'=>'v1'],function(){
+    Route::resource('lessons','LessonController');
 });
+
+
+

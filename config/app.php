@@ -163,10 +163,11 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
 
-        Dingo\Api\Provider\LaravelServiceProvider::class,
 
-        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
-
+        /*
+         * Laravel passport
+         */
+        Laravel\Passport\PassportServiceProvider::class,
 
         /*
          * Package Service Providers...
