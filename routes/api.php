@@ -11,7 +11,7 @@
 |
 */
 
-Route::group(['prefix'=>'v1'],function(){
+Route::group(['prefix'=>'v1','middleware'=>'auth'],function(){
     Route::resource('lessons','LessonController');
 });
 
